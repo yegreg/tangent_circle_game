@@ -1,12 +1,17 @@
+#include ".git/circleboardgui.h"
+#include <QtQuick/QQuickView>
 #include <QGuiApplication>
-#include <QQmlApplicationEngine>
 
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
 
-    QQmlApplicationEngine engine;
-    engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
+    qmlRegisterType<CircleBoardGUI>("Charts", 1, 0, "CircleBoard");
+
+    QQuickView view;
+    view.setResizeMode(QQuickView::SizeRootObjectToView);
+    view.setSource(QUrl("qrc:///main.qml"));
+    view.show();
 
     return app.exec();
 }
