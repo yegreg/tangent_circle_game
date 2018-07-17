@@ -7,7 +7,8 @@ SOURCES += main.cpp \
     .git/circlelogic.cpp \
     .git/circle.cpp \
     .git/circleboardgui.cpp \
-    .git/circleboard.cpp
+    .git/circleboard.cpp \
+    .git/guiscaler.cpp
 
 RESOURCES += qml.qrc
 
@@ -37,4 +38,5 @@ HEADERS += \
     .git/circlelogic.h \
     .git/circle.h \
     .git/circleboardgui.h \
-    .git/circleboard.h
+    .git/circleboard.h \
+    .git/guiscaler.h
