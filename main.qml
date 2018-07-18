@@ -4,7 +4,7 @@ import QtQuick 2.0
 
 
 Item {
-    width: 800; height: 600
+    width: 900; height: 700
 
     CircleBoard {
         id: aCircleBoard
@@ -15,25 +15,26 @@ Item {
         Component.onCompleted: initialize();
     }
 
-//    Rectangle {
-//        id: simpleButton
-//        color: "grey"
-//        width: 150; height: 75
+    Rectangle {
+        id: restartButton
+        x: 8
+        y: 642
+        color: "grey"
+        width: 100; height: 50
 
-//        Text {
-//            id: buttonLabel
-//            anchors.centerIn: parent
-//            text: "button label"
-//        }
+        Text {
+            id: buttonLabel
+            anchors.centerIn: parent
+            text: "Restart Game"
+        }
 
-//        MouseArea {
-//                id: buttonMouseArea
-
-//                // Anchor all sides of the mouse area to the rectangle's anchors
-//                anchors.fill: parent
-//                // onClicked handles valid mouse button clicks
-//                onClicked: aCircleBoard.buttonClick()
-//        }
-//    }
+        MouseArea {
+            id: buttonMouseArea
+            // Anchor all sides of the mouse area to the rectangle's anchors
+                anchors.fill: parent
+                // onClicked handles valid mouse button clicks
+                onClicked: aCircleBoard.restartGame()
+        }
+    }
 
 }
