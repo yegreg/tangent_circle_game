@@ -26,6 +26,7 @@ public:
 
     Q_INVOKABLE void initialize();
     Q_INVOKABLE void restartGame();
+    Q_INVOKABLE QString getScoreString() const;
 
     QColor color() const;
     void setColor(const QColor &color);
@@ -38,6 +39,9 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event) override;
     void wheelEvent(QWheelEvent * event) override;
     void hoverMoveEvent(QHoverEvent *event) override;
+
+signals:
+    void refreshScoreBoard();
 
 private:
     std::vector<circle_ptr> circles;
@@ -52,7 +56,10 @@ private:
     void setUpBrushes();
 
     GUIScaler guiScaler;
+    // previous position of mouse pointer
     QPointF m_prevPoint;
+    // position where mouse was clicked
+    QPointF m_clickPoint;
 };
 
 #endif // CIRCLEBOARDGUI_H

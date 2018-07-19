@@ -4,11 +4,11 @@ QT += qml quick
 CONFIG += c++11
 
 SOURCES += main.cpp \
-    .git/circlelogic.cpp \
-    .git/circle.cpp \
-    .git/circleboardgui.cpp \
-    .git/circleboard.cpp \
-    .git/guiscaler.cpp
+    circlelogic.cpp \
+    circle.cpp \
+    circleboardgui.cpp \
+    circleboard.cpp \
+    guiscaler.cpp
 
 RESOURCES += qml.qrc
 
@@ -27,7 +27,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also make your code fail to compile if you use deprecated APIs.
 # In order to do so, uncomment the following line.
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
-#DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
+DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -35,8 +35,8 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
-    .git/circlelogic.h \
-    .git/circle.h \
-    .git/circleboardgui.h \
-    .git/circleboard.h \
-    .git/guiscaler.h
+    circlelogic.h \
+    circle.h \
+    circleboardgui.h \
+    circleboard.h \
+    guiscaler.h

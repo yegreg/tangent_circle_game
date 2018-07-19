@@ -1,5 +1,6 @@
 #include "circleboardgui.h"
 #include <math.h>
+#include <sstream>
 
 static const double MARGIN = 0.95;
 static const double SCROLL_SPEED = 1.0 / 1200;
@@ -13,8 +14,6 @@ CircleBoardGUI::CircleBoardGUI(QQuickItem *parent)
     setAcceptedMouseButtons(Qt::AllButtons);
     setFlag(ItemAcceptsInputMethod, true);
 
-    m_prevPoint = QPoint(0, 0);
-
     setUpBrushes();
 }
 
@@ -22,6 +21,7 @@ CircleBoardGUI::CircleBoardGUI(QQuickItem *parent)
 void CircleBoardGUI::mousePressEvent(QMouseEvent *event)
 {
     m_prevPoint = event->pos();
+    m_clickPoint = event->pos();
 }
 
 void CircleBoardGUI::mouseMoveEvent(QMouseEvent *event)
@@ -35,7 +35,7 @@ void CircleBoardGUI::mouseMoveEvent(QMouseEvent *event)
 
 void CircleBoardGUI::mouseReleaseEvent(QMouseEvent *event)
 {
-    if (event->pos() == this->m_prevPoint) {
+    if (event->pos() == this->m_clickPoint) {
         QPointF truePos = this->guiScaler.getTruePosition(event->pos());
         for (circle_ptr c: this->circles) {
             if (c->contains(truePos)) {
@@ -43,6 +43,7 @@ void CircleBoardGUI::mouseReleaseEvent(QMouseEvent *event)
             }
         }
         this->update();
+        emit refreshScoreBoard();
     }
 }
 
@@ -103,6 +104,12 @@ void CircleBoardGUI::setColor(const QColor &color)
 void CircleBoardGUI::initialize()
 {
     qInfo("Init GUI");
+    this->game = CircleLogic();
+    this->guiScaler = GUIScaler();
+
+    m_prevPoint = QPoint(0, 0);
+    m_clickPoint = QPoint(0, 0);
+
     double width = this->width();
     double height = this->height();
     this->guiScaler.setSize(width, height);
@@ -117,13 +124,25 @@ void CircleBoardGUI::initialize()
             this->circles.push_back(c);
         }
     }
+
+    emit refreshScoreBoard();
 }
 
 void CircleBoardGUI::restartGame()
 {
-    this->game = CircleLogic();
+    qInfo("Restarting game");
     initialize();
     update();
+}
+
+QString CircleBoardGUI::getScoreString() const
+{
+    std::stringstream ss;
+    int numPlayers = this->game.getNumPlayers();
+    for (int player = 0; player < numPlayers; ++player) {
+        ss << "Player " << player + 1 << ": " << this->game.getScore(player) << "    ";
+    }
+    return QString::fromStdString(ss.str());
 }
 
 void CircleBoardGUI::paint(QPainter *painter)

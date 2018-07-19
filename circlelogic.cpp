@@ -4,13 +4,19 @@
 CircleLogic::CircleLogic(int numPlayers)
 {
     this->numPlayers = numPlayers;
-    this->currentPlayer = 1;
+    this->currentPlayer = 0;
+
+    for (int player = 0; player < numPlayers; ++player) {
+        this->scores[player] = 0;
+    }
 }
 
 void CircleLogic::selectCircle(circle_ptr circle)
 {
     if (circle->getPlayer() < 0) {
         circle->setPlayer(this->currentPlayer);
+        this->scores[currentPlayer]++;
+
         updateNeighbors(circle);
         runNextRound();
     } else {
@@ -35,6 +41,16 @@ const CircleBoard &CircleLogic::getBoard() const
 int CircleLogic::getCurrentPlayer() const
 {
     return this->currentPlayer;
+}
+
+int CircleLogic::getScore(int player) const
+{
+    return this->scores.at(player);
+}
+
+int CircleLogic::getNumPlayers() const
+{
+    return this->numPlayers;
 }
 
 void CircleLogic::runNextRound()
@@ -63,6 +79,7 @@ void CircleLogic::updateNeighbors(circle_ptr circle)
         if (nb->getPlayer() < 0
                 && this->neighborCounts[nb][this->currentPlayer] >= CONVERSION_MINIMUM) {
             nb->setPlayer(this->currentPlayer);
+            this->scores[currentPlayer]++;
             updateNeighbors(nb);
         }
     }

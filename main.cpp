@@ -1,4 +1,4 @@
-#include ".git/circleboardgui.h"
+#include "circleboardgui.h"
 #include <QtQuick/QQuickView>
 #include <QGuiApplication>
 
@@ -6,7 +6,7 @@ int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
 
-    qmlRegisterType<CircleBoardGUI>("Charts", 1, 0, "CircleBoard");
+    qmlRegisterType<CircleBoardGUI>("Charts", 1, 0, "CircleBoardGUI");
 
     QQuickView view;
     view.setResizeMode(QQuickView::SizeRootObjectToView);
