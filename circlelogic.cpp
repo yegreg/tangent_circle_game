@@ -75,13 +75,23 @@ void CircleLogic::updateNeighbors(circle_ptr circle)
     for (const circle_ptr &nb: neighbors) {
         this->neighborCounts[nb][this->currentPlayer]++;
     }
-    for (const circle_ptr &nb: neighbors) {
-        if (nb->getPlayer() < 0
-                && this->neighborCounts[nb][this->currentPlayer] >= CONVERSION_MINIMUM) {
-            nb->setPlayer(this->currentPlayer);
-            this->scores[currentPlayer]++;
-            updateNeighbors(nb);
-        }
-    }
+//    for (const circle_ptr &nb: neighbors) {
+//        // occupy empty circle
+//        if (nb->getPlayer() < 0
+//                && this->neighborCounts[nb][this->currentPlayer] >= CONVERSION_MINIMUM) {
+//            nb->setPlayer(this->currentPlayer);
+//            this->scores[currentPlayer]++;
+//            updateNeighbors(nb);
+//        }
+//        // occupy opponent's circle
+//        if (nb->getPlayer() >= 0
+//                && this->neighborCounts[nb][this->currentPlayer] >= OPPONENT_CONVERSION_MINIMUM
+//                && this->neighborCounts[nb][this->currentPlayer] > this->neighborCounts[nb][nb->getPlayer()]) {
+//            this->scores[nb->getPlayer()]--;
+//            nb->setPlayer(this->currentPlayer);
+//            this->scores[currentPlayer]++;
+//            updateNeighbors(nb);
+//        }
+//    }
 
 }

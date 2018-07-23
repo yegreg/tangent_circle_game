@@ -26,6 +26,7 @@ public:
     /* minimum numbers of neighboring circlis belonging
      * to a given player required to convert a circle */
     static const int CONVERSION_MINIMUM = 3;
+    static const int OPPONENT_CONVERSION_MINIMUM = 3;
 
 private:
     CircleBoard board;

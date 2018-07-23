@@ -1,8 +1,8 @@
 #include "circleboard.h"
 #include <QDebug>
 
-const int NUM_LEVELS = 4;
-const int FIRST_LEVEL_SIZE = 5;
+const int NUM_LEVELS = 5;
+const int FIRST_LEVEL_SIZE = 4;
 const double RHO = std::sin(M_PI / FIRST_LEVEL_SIZE);
 
 CircleBoard::CircleBoard()

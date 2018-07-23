@@ -4,7 +4,7 @@ import QtQuick 2.0
 
 
 Item {
-    width: 900; height: 700
+    width: 700; height: 700
 
     CircleBoardGUI {
         id: aCircleBoard
@@ -21,6 +21,7 @@ Item {
     Rectangle {
         id: statusBar
         anchors.bottom: parent.bottom
+        anchors.left: aCircleBoard.left
         width: 100; height: 50
         Rectangle {
             id: restartButton
@@ -56,12 +57,6 @@ Item {
                 text: ""
                 font.bold: true
                 font.pointSize: 10
-            }
-
-            MouseArea {
-                id: testButton
-                    anchors.fill: parent
-                    onClicked: scoreText.text = "Woooo"
             }
 
         }

@@ -32,6 +32,9 @@ public:
     void setColor(const QColor &color);
 
     void paint(QPainter *painter);
+    static const int ANIMATION_PAUSE = 200;
+    static void delay(int millisecs);
+
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;
@@ -60,6 +63,7 @@ private:
     QPointF m_prevPoint;
     // position where mouse was clicked
     QPointF m_clickPoint;
+
 };
 
 #endif // CIRCLEBOARDGUI_H

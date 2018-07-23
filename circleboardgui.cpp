@@ -1,6 +1,7 @@
 #include "circleboardgui.h"
 #include <math.h>
 #include <sstream>
+#include <QTime>
 
 static const double MARGIN = 0.95;
 static const double SCROLL_SPEED = 1.0 / 1200;
@@ -79,6 +80,15 @@ void CircleBoardGUI::setUpBrushes()
 
     hoverBrushes[CircleLogic::PLAYER_THREE] = QBrush(QColor(50, 255, 0, 100));
     playerBrushes[CircleLogic::PLAYER_THREE] = QBrush(QColor(50, 255, 0, 200));
+}
+
+void CircleBoardGUI::delay(int millisecs)
+{
+    QTime dieTime= QTime::currentTime().addMSecs(millisecs);
+    while (QTime::currentTime() < dieTime) {
+        QCoreApplication::processEvents(QEventLoop::AllEvents, millisecs / 2);
+    }
+
 }
 
 QString CircleBoardGUI::name() const
