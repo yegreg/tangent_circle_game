@@ -5,6 +5,9 @@
 
 static const double MARGIN = 0.95;
 static const double SCROLL_SPEED = 1.0 / 1200;
+/** how far the mouse can move between press and release
+* to count as a click */
+static const double MOUSE_SENSITIVITY = 3;
 static const int HOVER_DARKNESS = 150;
 
 
@@ -36,7 +39,7 @@ void CircleBoardGUI::mouseMoveEvent(QMouseEvent *event)
 
 void CircleBoardGUI::mouseReleaseEvent(QMouseEvent *event)
 {
-    if (event->pos() == this->m_clickPoint) {
+    if ((event->pos() - this->m_clickPoint).manhattanLength() < MOUSE_SENSITIVITY) {
         QPointF truePos = this->guiScaler.getTruePosition(event->pos());
         for (circle_ptr c: this->circles) {
             if (c->contains(truePos)) {
