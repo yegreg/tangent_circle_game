@@ -1,5 +1,6 @@
 #ifndef CIRCLEBOARDGUI_H
 #define CIRCLEBOARDGUI_H
+
 #include <QtQuick/QQuickPaintedItem>
 #include <QPainter>
 #include <QMouseEvent>
@@ -9,8 +10,6 @@
 #include "circle.h"
 #include "circlelogic.h"
 #include "guiscaler.h"
-
-static const int MAX_PLAYERS = 3;
 
 class CircleBoardGUI : public QQuickPaintedItem
 {
@@ -24,12 +23,18 @@ public:
     QString name() const;
     void setName(const QString &name);
 
-    Q_INVOKABLE void initialize();
-    Q_INVOKABLE void restartGame();
+    Q_INVOKABLE void initialize(int numPlayers=CircleLogic::DEFAULT_NUM_PLAYERS,
+                                int boardDepth=CircleLogic::DEFAULT_BOARD_DEPTH,
+                                int boardSymmetry=CircleLogic::DEFAULT_BOARD_SYMMETRY);
+    Q_INVOKABLE void restartGame(int numPlayers, int boardDepth, int boardSymmetry);
     Q_INVOKABLE QString getScoreString() const;
+    Q_INVOKABLE QString getWinnerString() const;
+    Q_INVOKABLE QString getRemainingRoundString() const;
 
     QColor color() const;
     void setColor(const QColor &color);
+
+    static const int MAX_PLAYERS = 3;
 
     void paint(QPainter *painter);
     static const int ANIMATION_PAUSE = 200;
@@ -45,6 +50,8 @@ protected:
 
 signals:
     void refreshScoreBoard();
+    void gameOver();
+    void newGame();
 
 private:
     std::vector<circle_ptr> circles;
@@ -53,10 +60,11 @@ private:
     QString m_name;
     QColor m_color;
 
-    QBrush playerBrushes[MAX_PLAYERS];
-    QBrush hoverBrushes[MAX_PLAYERS];
+    std::unordered_map<int, QBrush> playerBrushes;
+    std::unordered_map<int, QBrush> hoverBrushes;
     QBrush blankBrush;
     void setUpBrushes();
+    void endGame();
 
     GUIScaler guiScaler;
     // previous position of mouse pointer

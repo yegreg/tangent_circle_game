@@ -13,7 +13,10 @@ class CircleBoard
 {
 public:
     CircleBoard();
-    CircleBoard(double outer_radius, QPointF center);
+    CircleBoard(double outer_radius,
+                QPointF center,
+                int boardDepth,
+                int boardSymmetry);
     void generateBoard(double outer_radius, QPointF center);
     /**
      * @brief getBaseCircle
@@ -28,6 +31,9 @@ public:
     const std::unordered_map<circle_ptr, std::vector<circle_ptr> > &getGameNeighbors() const;
 
 private:
+    int boardDepth;
+    int boardSymmetry;
+    double rho;
     QPointF rotate(double x, double y, double angle);
     std::vector<std::vector<circle_ptr>> levels;
     circle_ptr baseCircle;

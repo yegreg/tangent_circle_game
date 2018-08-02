@@ -11,34 +11,51 @@
 class CircleLogic
 {
 public:
-    CircleLogic(int numPlayers = 2);
-    void selectCircle(circle_ptr circle);
+    static const int DEFAULT_NUM_PLAYERS = 2;
+    static const int DEFAULT_BOARD_DEPTH = 4;
+    static const int DEFAULT_BOARD_SYMMETRY = 4;
+
+    CircleLogic(int numPlayers=DEFAULT_NUM_PLAYERS,
+                int boardDepth=DEFAULT_BOARD_DEPTH,
+                int boardSymmetry=DEFAULT_BOARD_SYMMETRY);
+    /**
+     * @brief selectCircle
+     * @param circle
+     * @return false if game is over
+     */
+    bool selectCircle(circle_ptr circle);
     void setUpBoard(double radius, QPointF center);
     const CircleBoard &getBoard() const;
     int getCurrentPlayer() const;
     int getScore(int player) const;
     int getNumPlayers() const;
+    int getRemainingSteps(int player) const;
+    /**
+     * @brief getWinners
+     * @return list of players with highest score
+     */
+    std::vector<int> getWinners() const;
 
-    static const int PLAYER_ONE = 0;
-    static const int PLAYER_TWO = 1;
-    static const int PLAYER_THREE = 2;
-
-    /* minimum numbers of neighboring circlis belonging
-     * to a given player required to convert a circle */
-    static const int CONVERSION_MINIMUM = 3;
-    static const int OPPONENT_CONVERSION_MINIMUM = 3;
+    static const int PLAYER_ONE;
+    static const int PLAYER_TWO;
+    static const int PLAYER_THREE;
+    static const int GAME_OVER;
 
 private:
     CircleBoard board;
+    int numCircles;
     int currentPlayer;
     int numPlayers;
-    // number of neighbors of a circle belonging to a given player
-    std::unordered_map<circle_ptr, std::unordered_map<int, int>> neighborCounts;
-    std::unordered_map<int, int> scores;
+    int boardDepth;
+    int boardSymmetry;
 
-    void runNextRound();
+    std::unordered_map<int, int> scores;
+    std::unordered_map<int, int> remainingSteps;
+
+    bool runNextRound();
     void updateNeighbors(circle_ptr circle);
-    void initNeighborCounts();
+    void initCircleCounts();
+    void endGame();
 
 };
 

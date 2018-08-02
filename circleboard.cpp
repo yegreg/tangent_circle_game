@@ -1,16 +1,16 @@
 #include "circleboard.h"
 #include <QDebug>
 
-const int NUM_LEVELS = 4;
-const int FIRST_LEVEL_SIZE = 4;
-const double RHO = std::sin(M_PI / FIRST_LEVEL_SIZE);
 
 CircleBoard::CircleBoard()
 {
 }
 
-CircleBoard::CircleBoard(double outer_radius, QPointF center) {
+CircleBoard::CircleBoard(double outer_radius, QPointF center, int boardDepth, int boardSymmetry) {
     qInfo("Generating board");
+    this->boardDepth = boardDepth;
+    this->boardSymmetry = boardSymmetry;
+    this->rho = std::sin(M_PI / boardSymmetry);
     generateBoard(outer_radius, center);
     initGameNeighbors();
 }
@@ -49,24 +49,27 @@ void CircleBoard::generateBoard(double outer_radius, QPointF center)
     this->levels.push_back(level0);
     this->neighbors[baseCircle] = std::vector<circle_ptr>();
 
-    double newRadius = outer_radius / (1.0 + 1.0 / RHO);
-    double cx = newRadius / RHO;
-    double cy = 0;
+    double newRadius = outer_radius / (1.0 + 1.0 / this->rho);
+    double cx = 0;
+    double cy = newRadius / this->rho;
 
     // level 1 circles
-    circle_ptr init_circles[FIRST_LEVEL_SIZE];
+    circle_ptr init_circles[this->boardSymmetry];
 
-    for (int i = 0; i < FIRST_LEVEL_SIZE; ++i) {
-        init_circles[i] = circle_ptr(new Circle(newRadius, center + rotate(cx, cy, i * 2 * M_PI / FIRST_LEVEL_SIZE)));
+    for (int i = 0; i < this->boardSymmetry; ++i) {
+        init_circles[i] = circle_ptr(new Circle(newRadius,
+                                                center + rotate(cx,
+                                                                cy,
+                                                                i * 2 * M_PI / this->boardSymmetry)));
     }
 
     std::vector<circle_ptr> level1;
-    for (int i = 0; i < FIRST_LEVEL_SIZE; ++i) {
+    for (int i = 0; i < this->boardSymmetry; ++i) {
         level1.push_back(init_circles[i]);
         this->neighbors[init_circles[i]] = std::vector<circle_ptr>();
-        this->neighbors[init_circles[i]].push_back(init_circles[(i + 1) % FIRST_LEVEL_SIZE]);
-        int prev = (i - 1) % FIRST_LEVEL_SIZE;
-        prev = prev < 0 ? prev + FIRST_LEVEL_SIZE : prev;
+        this->neighbors[init_circles[i]].push_back(init_circles[(i + 1) % this->boardSymmetry]);
+        int prev = (i - 1) % this->boardSymmetry;
+        prev = prev < 0 ? prev + this->boardSymmetry : prev;
         this->neighbors[init_circles[i]].push_back(init_circles[prev]);
         this->neighbors[init_circles[i]].push_back(baseCircle);
         this->neighbors[baseCircle].push_back(init_circles[i]);
@@ -77,9 +80,9 @@ void CircleBoard::generateBoard(double outer_radius, QPointF center)
     // level 2 circles
     std::vector<circle_ptr> level2;
     QPointF centerSum = QPointF(0, 0);
-    for (int i = 0; i < FIRST_LEVEL_SIZE; ++i) {
+    for (int i = 0; i < this->boardSymmetry; ++i) {
         circle_ptr c2 = init_circles[i];
-        circle_ptr c3 = init_circles[(i + 1) % FIRST_LEVEL_SIZE];
+        circle_ptr c3 = init_circles[(i + 1) % this->boardSymmetry];
         Circle newCircle = Circle::findInnerSoddyCircle(
                     *this->baseCircle,
                     *c2,
@@ -95,21 +98,21 @@ void CircleBoard::generateBoard(double outer_radius, QPointF center)
         centerSum += init_circles[i]->getCenter();
     }
     // center circle
-    double centerRadius = newRadius * (1 / RHO - 1);
-    QPointF centerCenter = centerSum / FIRST_LEVEL_SIZE;
+    double centerRadius = newRadius * (1 / this->rho - 1);
+    QPointF centerCenter = centerSum / this->boardSymmetry;
     circle_ptr centerCircle = circle_ptr(new Circle(centerRadius, centerCenter));
     level2.push_back(centerCircle);
     this->neighbors[centerCircle] = std::vector<circle_ptr>(
                 init_circles,
                 init_circles + sizeof(init_circles) / sizeof(init_circles[0]));
-    for (int i = 0; i < FIRST_LEVEL_SIZE; ++i) {
+    for (int i = 0; i < this->boardSymmetry; ++i) {
         this->neighbors[init_circles[i]].push_back(centerCircle);
     }
 
     this->levels.push_back(level2);
 
     // remaining circles
-    for (int i = 3; i < NUM_LEVELS; ++i) {
+    for (int i = 3; i < this->boardDepth; ++i) {
         std::vector<circle_ptr> newLevel;
         std::vector<circle_ptr> lastLevel = levels[i - 1];
         for (circle_ptr circle: lastLevel) {

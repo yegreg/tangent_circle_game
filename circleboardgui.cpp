@@ -43,7 +43,9 @@ void CircleBoardGUI::mouseReleaseEvent(QMouseEvent *event)
         QPointF truePos = this->guiScaler.getTruePosition(event->pos());
         for (circle_ptr c: this->circles) {
             if (c->contains(truePos)) {
-                this->game.selectCircle(c);
+                if (!this->game.selectCircle(c)) {
+                    endGame();
+                }
             }
         }
         this->update();
@@ -83,6 +85,14 @@ void CircleBoardGUI::setUpBrushes()
 
     hoverBrushes[CircleLogic::PLAYER_THREE] = QBrush(QColor(50, 255, 0, 100));
     playerBrushes[CircleLogic::PLAYER_THREE] = QBrush(QColor(50, 255, 0, 200));
+
+    hoverBrushes[CircleLogic::GAME_OVER] = QBrush(QColor(100, 100, 100, 100));
+    playerBrushes[CircleLogic::GAME_OVER] = QBrush(QColor(100, 100, 100, 200));
+}
+
+void CircleBoardGUI::endGame()
+{
+    emit gameOver();
 }
 
 void CircleBoardGUI::delay(int millisecs)
@@ -114,10 +124,10 @@ void CircleBoardGUI::setColor(const QColor &color)
     m_color = color;
 }
 
-void CircleBoardGUI::initialize()
+void CircleBoardGUI::initialize(int numPlayers, int boardDepth, int boardSymmetry)
 {
     qInfo("Init GUI");
-    this->game = CircleLogic();
+    this->game = CircleLogic(numPlayers, boardDepth, boardSymmetry);
     this->guiScaler = GUIScaler();
 
     m_prevPoint = QPoint(0, 0);
@@ -138,13 +148,14 @@ void CircleBoardGUI::initialize()
         }
     }
 
+    emit newGame();
     emit refreshScoreBoard();
 }
 
-void CircleBoardGUI::restartGame()
+void CircleBoardGUI::restartGame(int numPlayers, int boardDepth, int boardSymmetry)
 {
     qInfo("Restarting game");
-    initialize();
+    initialize(numPlayers, boardDepth, boardSymmetry);
     update();
 }
 
@@ -153,10 +164,41 @@ QString CircleBoardGUI::getScoreString() const
     std::stringstream ss;
     int numPlayers = this->game.getNumPlayers();
     for (int player = 0; player < numPlayers; ++player) {
-        ss << "Player " << player + 1 << ": " << this->game.getScore(player) << "    ";
+        ss << "Player " << player + 1 << ": " << this->game.getScore(player) << "        ";
     }
     return QString::fromStdString(ss.str());
 }
+
+QString CircleBoardGUI::getWinnerString() const
+{
+    std::vector<int> winners = game.getWinners();
+    std::stringstream ss;
+    ss << "Game Over." << std::endl;
+    if (winners.size() == 1) {
+        ss << "Player " << winners.at(0) + 1 << " wins." << std::endl;
+    } else {
+        ss << "Draw between players ";
+        ss << winners.at(0) + 1;
+        for (uint i = 1; i < winners.size(); ++i) {
+            ss << " and " << winners.at(i) + 1;
+        }
+        ss << "." << std::endl;
+    }
+    ss << "Well played, congratulations!";
+    return QString::fromStdString(ss.str());
+}
+
+QString CircleBoardGUI::getRemainingRoundString() const
+{
+    std::stringstream ss;
+    int numPlayers = this->game.getNumPlayers();
+    for (int player = 0; player < numPlayers; ++player) {
+        ss << "Player " << player + 1 << ": " << this->game.getRemainingSteps(player) << "        ";
+    }
+    return QString::fromStdString(ss.str());
+}
+
+
 
 void CircleBoardGUI::paint(QPainter *painter)
 {
