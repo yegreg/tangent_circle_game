@@ -87,7 +87,7 @@ Item {
             anchors.topMargin: marginSize
             anchors.horizontalCenter: parent.horizontalCenter
             model: ["1 (vs. bot)", "2", "3"]
-            currentIndex: 1 // default two players
+            currentIndex: 0 // default vs bot
         }
 
         Text {

@@ -8,7 +8,8 @@ SOURCES += main.cpp \
     circle.cpp \
     circleboardgui.cpp \
     circleboard.cpp \
-    guiscaler.cpp
+    guiscaler.cpp \
+    circlebot.cpp
 
 RESOURCES += qml.qrc
 
@@ -39,4 +40,5 @@ HEADERS += \
     circle.h \
     circleboardgui.h \
     circleboard.h \
-    guiscaler.h
+    guiscaler.h \
+    circlebot.h
