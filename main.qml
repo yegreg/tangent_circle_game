@@ -64,11 +64,12 @@ Item {
         id: menuBar
         anchors.top: parent.top
         anchors.left: aCircleBoard.right
-        width: 200
+        width: menuWidth
         color: "#30BB10FF"
         height: parent.height
 
         property int textSize: 10
+        property int comboBoxWidth: 150
 
         Text {
             id: numPlayersLabel
@@ -82,17 +83,141 @@ Item {
 
         ComboBox {
             id: numPlayersDropDown
-            width: 150
+            property bool botOn: false
+            width: menuWidth - 2 * marginSize
             anchors.top: numPlayersLabel.bottom
             anchors.topMargin: marginSize
             anchors.horizontalCenter: parent.horizontalCenter
             model: ["1 (vs. bot)", "2", "3"]
             currentIndex: 0 // default vs bot
+            onCurrentIndexChanged: {
+                if (!botOptions) return;
+                if (numPlayersDropDown.currentIndex == 0) {
+                    botOn = true
+                    botOptions.visible = true
+                    botOptions.height = botOptions.botOptionHeight
+                    botOptions.anchors.topMargin = marginSize
+                } else {
+                    botOn = false
+                    botOptions.visible = false
+                    botOptions.height = 0
+                    botOptions.anchors.topMargin = 0
+                }
+            }
+        }
+
+        Rectangle {
+            id: botOptions
+            property int botPlayer: 1
+            property int botOptionHeight: 140
+            height: botOptionHeight
+            anchors.top: numPlayersDropDown.bottom
+            anchors.topMargin: marginSize
+            anchors.left: numPlayersDropDown.left
+            visible: true
+
+            property int colorBoxSize: menuWidth / 5
+
+            Text {
+                id: botPlayerLabel
+                anchors.top: parent.top
+                anchors.left: parent.left
+                text: "Player color:"
+            }
+
+            Rectangle {
+                id: playerColorSwitch
+                anchors.top: botPlayerLabel.bottom
+                anchors.topMargin: marginSize
+                height: colorSwitchHeight
+
+                property int selectionWidth: 3
+                property int colorSwitchHeight: 60
+
+
+                Rectangle {
+                    id: redPlayerChoice
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.leftMargin: marginSize
+                    color: aCircleBoard.getPlayerColor(0);
+                    width: botOptions.colorBoxSize
+                    height: botOptions.colorBoxSize
+
+                    Rectangle {
+                        id: redPlayerSelectionMarker
+                        anchors.fill: parent
+                        color: "transparent"
+                        border.color: "black"
+                        border.width: playerColorSwitch.selectionWidth
+                        visible: true
+                    }
+
+                    MouseArea {
+                        id: redPlayerSelectButton
+                        anchors.fill: parent
+                        onClicked: {
+                            botOptions.botPlayer = 1
+                            redPlayerSelectionMarker.visible = true
+                            bluePlayerSelectionMarker.visible = false
+                        }
+                    }
+                }
+
+                Rectangle {
+                    id: bluePlayerChoice
+                    anchors.top: parent.top
+                    anchors.left: redPlayerChoice.right
+                    anchors.leftMargin: marginSize
+                    color: aCircleBoard.getPlayerColor(1);
+                    width: botOptions.colorBoxSize
+                    height: botOptions.colorBoxSize
+
+                    Rectangle {
+                        id: bluePlayerSelectionMarker
+                        anchors.fill: parent
+                        color: "transparent"
+                        border.color: "black"
+                        border.width: playerColorSwitch.selectionWidth
+                        visible: false
+                    }
+
+                    MouseArea {
+                        id: bluePlayerSelectButton
+                        anchors.fill: parent
+                        onClicked: {
+                            botOptions.botPlayer = 0
+                            bluePlayerSelectionMarker.visible = true
+                            redPlayerSelectionMarker.visible = false
+                        }
+                    }
+
+                }
+
+
+            }
+
+            Text {
+                id: botDifficultyLabel
+                text: "Bot difficulty:"
+                anchors.top: playerColorSwitch.bottom
+                anchors.left: parent.left
+            }
+
+            ComboBox {
+                id: botDifficulty
+                anchors.top: botDifficultyLabel.bottom
+                anchors.topMargin: marginSize / 2
+                anchors.left: parent.left
+                width: menuBar.comboBoxWidth
+                model: [1, 2, 3, 4]
+            }
+
         }
 
         Text {
             id: boardDepthLabel
-            anchors.top: numPlayersDropDown.bottom
+            anchors.top: botOptions.bottom
             anchors.topMargin: marginSize
             anchors.left: numPlayersDropDown.left
             text: "Board depth:"
@@ -102,7 +227,7 @@ Item {
 
         ComboBox {
             id: boardDepthDropDown
-            width: 150
+            width: menuBar.comboBoxWidth
             anchors.top: boardDepthLabel.bottom
             anchors.topMargin: marginSize
             anchors.left: numPlayersDropDown.left
@@ -123,7 +248,7 @@ Item {
 
         ComboBox {
             id: boardSymmetryDropDown
-            width: 150
+            width: menuBar.comboBoxWidth
             anchors.top: boardSymmetryLabel.bottom
             anchors.topMargin: marginSize
             anchors.left: numPlayersDropDown.left
@@ -136,9 +261,10 @@ Item {
             id: restartButton
             anchors.top: boardSymmetryDropDown.bottom
             anchors.topMargin: marginSize
-            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.horizontalCenter: boardSymmetryDropDown.horizontalCenter
             color: "#F0EE9000"
-            width: 120; height: 30
+            width: menuBar.comboBoxWidth - 2 * marginSize
+            height: 30
 
             Text {
                 id: buttonLabel
@@ -151,12 +277,14 @@ Item {
 
             MouseArea {
                 id: buttonMouseArea
-                    anchors.fill: parent
-                    onClicked: {
-                        aCircleBoard.restartGame(numPlayersDropDown.currentIndex + 1,
-                                                 boardDepthDropDown.currentIndex + boardDepthDropDown.minDepth,
-                                                 boardSymmetryDropDown.currentIndex + boardSymmetryDropDown.minSymmetry)
-                    }
+                anchors.fill: parent
+                onClicked: {
+                    aCircleBoard.restartGame(numPlayersDropDown.currentIndex + 1,
+                                             boardDepthDropDown.currentIndex + boardDepthDropDown.minDepth,
+                                             boardSymmetryDropDown.currentIndex + boardSymmetryDropDown.minSymmetry,
+                                             botOptions.botPlayer,
+                                             botDifficulty.currentIndex)
+                }
             }
         }
 

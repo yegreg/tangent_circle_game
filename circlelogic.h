@@ -20,7 +20,8 @@ public:
     CircleLogic(int numPlayers=DEFAULT_NUM_PLAYERS,
                 int boardDepth=DEFAULT_BOARD_DEPTH,
                 int boardSymmetry=DEFAULT_BOARD_SYMMETRY,
-                int botPlayer=DEFAULT_BOT_PLAYER);
+                int botPlayer=DEFAULT_BOT_PLAYER,
+                int botDifficulty=CircleBot::DEFAULT_BOT_DIFFICULTY);
     /**
      * @brief selectCircle
      * @param circle
@@ -34,6 +35,7 @@ public:
     int getScore(int player) const;
     int getNumPlayers() const;
     int getRemainingSteps(int player) const;
+    bool botStep();
     /**
      * @brief getWinners
      * @return list of players with highest score
@@ -42,6 +44,7 @@ public:
     int getFilledNeighborCount(const circle_ptr& circle) const;
     const std::unordered_set<circle_ptr> &getUnfilledCircles() const;
 
+    static const int NO_PLAYER;
     static const int PLAYER_ONE;
     static const int PLAYER_TWO;
     static const int PLAYER_THREE;
@@ -62,6 +65,7 @@ private:
      * @brief botPlayer stores which player is the bot
      */
     int botPlayer;
+    int botDifficulty;
     /**
      * @brief bot playing the opponent
      */

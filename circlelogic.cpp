@@ -1,18 +1,22 @@
 #include "circlelogic.h"
 #include <QDebug>
 
+const int CircleLogic::NO_PLAYER = -1; // unoccupied
 const int CircleLogic::PLAYER_ONE = 0;
 const int CircleLogic::PLAYER_TWO = 1;
 const int CircleLogic::PLAYER_THREE = 2;
 const int CircleLogic::GAME_OVER = -2;
 
-CircleLogic::CircleLogic(int numPlayers, int boardDepth, int boardSymmetry, int botPlayer)
+CircleLogic::CircleLogic(int numPlayers, int boardDepth, int boardSymmetry, int botPlayer, int botDifficulty)
 {
     if (numPlayers == 1) {
         qInfo("Setting up bot.");
         this->numPlayers = 2;
         this->botOn = true;
         this->botPlayer = botPlayer;
+        this->botDifficulty = botDifficulty;
+        qDebug() << "Bot is player " << this->botPlayer;
+        qDebug() << "Bot difficulty: " << this->botDifficulty;
     } else {
         this->numPlayers = numPlayers;
         this->botOn = false;
@@ -31,12 +35,10 @@ bool CircleLogic::selectCircle(circle_ptr circle)
     if (this->remainingSteps[currentPlayer] <= 0) {
         return false;
     }
-    if (circle->getPlayer() < 0) {
+    if (circle->getPlayer() == NO_PLAYER) {
         circle->setPlayer(this->currentPlayer);
         this->scores[currentPlayer]++;
-        qDebug() << "before: " << this->unFilledCircles.size();
         this->unFilledCircles.erase(circle);
-        qDebug() << "after: " << this->unFilledCircles.size();
         this->remainingSteps[currentPlayer]--;
 
         updateNeighbors(circle);
@@ -57,7 +59,7 @@ void CircleLogic::setUpBoard(double radius, QPointF center)
 
 void CircleLogic::initBot()
 {
-    this->bot = CircleBot(this);
+    this->bot = CircleBot(this, this->botDifficulty);
 }
 
 const CircleBoard &CircleLogic::getBoard() const
@@ -108,7 +110,6 @@ int CircleLogic::getFilledNeighborCount(const circle_ptr &circle) const
 
 const std::unordered_set<circle_ptr> &CircleLogic::getUnfilledCircles() const
 {
-    qDebug() << "Unfilled request: " << this->unFilledCircles.size();
     return this->unFilledCircles;
 }
 
@@ -120,12 +121,14 @@ bool CircleLogic::runNextRound()
         endGame();
         return false;
     }
-    qDebug() << "Unfilld: " << this->unFilledCircles.size();
     if (this->botOn && this->currentPlayer == this->botPlayer) {
-        qInfo("Bot's turn");
-        return this->selectCircle(this->bot.getNextStep());
+        return botStep();
     }
     return true;
+}
+
+bool CircleLogic::botStep() {
+    return this->selectCircle(this->bot.getNextStep());
 }
 
 void CircleLogic::initCircleCounts()
@@ -141,7 +144,6 @@ void CircleLogic::initCircleCounts()
     }
     this->numCircles--; // don't want to count outer circle
     this->unFilledCircles.erase(this->board.getBaseCircle());
-    qDebug() << "Unfilled: " << this->unFilledCircles.size();
     int stepPerPlayer = this->numCircles / this->numPlayers;
     for (int player = 0; player < this->numPlayers; ++player) {
         this->remainingSteps[player] = stepPerPlayer;
@@ -161,7 +163,7 @@ void CircleLogic::updateNeighbors(circle_ptr circle)
     // flip neighboring circles (shift players)
     for (const circle_ptr &nb: neighbors) {
         int player = nb->getPlayer();
-        if (player >= 0) {
+        if (player > NO_PLAYER) {
             int newPlayer = (player + 1) % this->numPlayers;
             nb->setPlayer(newPlayer);
             this->scores[player]--;

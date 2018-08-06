@@ -10,6 +10,10 @@ static const double SCROLL_SPEED = 1.0 / 1200;
 static const double MOUSE_SENSITIVITY = 3;
 static const int HOVER_DARKNESS = 150;
 
+std::unordered_map<int, QBrush> CircleBoardGUI::playerBrushes;
+std::unordered_map<int, QBrush> CircleBoardGUI::hoverBrushes;
+QBrush CircleBoardGUI::blankBrush;
+
 
 CircleBoardGUI::CircleBoardGUI(QQuickItem *parent)
     : QQuickPaintedItem(parent)
@@ -104,6 +108,12 @@ void CircleBoardGUI::delay(int millisecs)
 
 }
 
+QColor CircleBoardGUI::getPlayerColor(int player)
+{
+    QColor toReturn = playerBrushes[player].color();
+    return toReturn;
+}
+
 QString CircleBoardGUI::name() const
 {
     return m_name;
@@ -124,10 +134,14 @@ void CircleBoardGUI::setColor(const QColor &color)
     m_color = color;
 }
 
-void CircleBoardGUI::initialize(int numPlayers, int boardDepth, int boardSymmetry)
+void CircleBoardGUI::initialize(int numPlayers,
+                                int boardDepth,
+                                int boardSymmetry,
+                                int botPlayer,
+                                int botDifficulty)
 {
     qInfo("Init GUI");
-    this->game = CircleLogic(numPlayers, boardDepth, boardSymmetry);
+    this->game = CircleLogic(numPlayers, boardDepth, boardSymmetry, botPlayer, botDifficulty);
     this->guiScaler = GUIScaler();
 
     m_prevPoint = QPoint(0, 0);
@@ -152,10 +166,17 @@ void CircleBoardGUI::initialize(int numPlayers, int boardDepth, int boardSymmetr
     emit refreshScoreBoard();
 }
 
-void CircleBoardGUI::restartGame(int numPlayers, int boardDepth, int boardSymmetry)
+void CircleBoardGUI::restartGame(int numPlayers,
+                                 int boardDepth,
+                                 int boardSymmetry,
+                                 int botPlayer,
+                                 int botDifficulty)
 {
     qInfo("Restarting game");
-    initialize(numPlayers, boardDepth, boardSymmetry);
+    initialize(numPlayers, boardDepth, boardSymmetry, botPlayer, botDifficulty);
+    if (botPlayer == CircleLogic::PLAYER_ONE) {
+        this->game.botStep();
+    }
     update();
 }
 

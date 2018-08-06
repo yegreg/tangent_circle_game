@@ -25,8 +25,14 @@ public:
 
     Q_INVOKABLE void initialize(int numPlayers=CircleLogic::DEFAULT_NUM_PLAYERS,
                                 int boardDepth=CircleLogic::DEFAULT_BOARD_DEPTH,
-                                int boardSymmetry=CircleLogic::DEFAULT_BOARD_SYMMETRY);
-    Q_INVOKABLE void restartGame(int numPlayers, int boardDepth, int boardSymmetry);
+                                int boardSymmetry=CircleLogic::DEFAULT_BOARD_SYMMETRY,
+                                int botPlayer=CircleLogic::DEFAULT_BOT_PLAYER,
+                                int botDifficulty=CircleBot::DEFAULT_BOT_DIFFICULTY);
+    Q_INVOKABLE void restartGame(int numPlayers,
+                                 int boardDepth,
+                                 int boardSymmetry,
+                                 int botPlayer,
+                                 int botDifficulty);
     Q_INVOKABLE QString getScoreString() const;
     Q_INVOKABLE QString getWinnerString() const;
     Q_INVOKABLE QString getRemainingRoundString() const;
@@ -40,6 +46,11 @@ public:
     static const int ANIMATION_PAUSE = 200;
     static void delay(int millisecs);
 
+    static std::unordered_map<int, QBrush> playerBrushes;
+    static std::unordered_map<int, QBrush> hoverBrushes;
+    static QBrush blankBrush;
+
+    Q_INVOKABLE static QColor getPlayerColor(int player);
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;
@@ -60,9 +71,6 @@ private:
     QString m_name;
     QColor m_color;
 
-    std::unordered_map<int, QBrush> playerBrushes;
-    std::unordered_map<int, QBrush> hoverBrushes;
-    QBrush blankBrush;
     void setUpBrushes();
     void endGame();
 
