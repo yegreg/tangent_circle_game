@@ -10,6 +10,8 @@ static const double SCROLL_SPEED = 1.0 / 1200;
 static const double MOUSE_SENSITIVITY = 3;
 static const int HOVER_DARKNESS = 150;
 
+static const int BOT_PAUSE = 1000;
+
 std::unordered_map<int, QBrush> CircleBoardGUI::playerBrushes;
 std::unordered_map<int, QBrush> CircleBoardGUI::hoverBrushes;
 QBrush CircleBoardGUI::blankBrush;
@@ -108,6 +110,11 @@ void CircleBoardGUI::delay(int millisecs)
 
 }
 
+void CircleBoardGUI::botPause()
+{
+    delay(BOT_PAUSE);
+}
+
 QColor CircleBoardGUI::getPlayerColor(int player)
 {
     QColor toReturn = playerBrushes[player].color();
@@ -141,7 +148,7 @@ void CircleBoardGUI::initialize(int numPlayers,
                                 int botDifficulty)
 {
     qInfo("Init GUI");
-    this->game = CircleLogic(numPlayers, boardDepth, boardSymmetry, botPlayer, botDifficulty);
+    this->game = CircleLogic(this, numPlayers, boardDepth, boardSymmetry, botPlayer, botDifficulty);
     this->guiScaler = GUIScaler();
 
     m_prevPoint = QPoint(0, 0);

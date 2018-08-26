@@ -36,7 +36,7 @@ circle_ptr CircleBot::greedyNextStep() const
 {
     std::vector<circle_ptr> bestMoves;
     // most number of circles that can be permanently occupied
-    int highestOccupation = 0;
+    int highestOccupation = INT_MIN;
 
     for (const circle_ptr &circle: parentGame->getUnfilledCircles()) {
         int occupation = computeOccupation(circle);
@@ -66,7 +66,7 @@ circle_ptr CircleBot::sillyGreedyNextStep() const
 {
     std::vector<circle_ptr> bestMoves;
     // most number of circles that can be permanently occupied
-    int highestOccupation = 0;
+    int highestOccupation = INT_MIN;
 
     for (const circle_ptr &circle: parentGame->getUnfilledCircles()) {
         int occupation = computeNaiveOccupation(circle);

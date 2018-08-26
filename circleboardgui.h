@@ -45,6 +45,7 @@ public:
     void paint(QPainter *painter);
     static const int ANIMATION_PAUSE = 200;
     static void delay(int millisecs);
+    static void botPause();
 
     static std::unordered_map<int, QBrush> playerBrushes;
     static std::unordered_map<int, QBrush> hoverBrushes;

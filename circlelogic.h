@@ -5,6 +5,8 @@
 #include "circlebot.h"
 #include <unordered_set>
 
+class CircleBoardGUI;
+
 /**
  * @brief The CircleLogic class
  * Handles game logic
@@ -17,7 +19,10 @@ public:
     static const int DEFAULT_BOARD_SYMMETRY = 4;
     static const int DEFAULT_BOT_PLAYER = 1; // bot is second player by default
 
-    CircleLogic(int numPlayers=DEFAULT_NUM_PLAYERS,
+    CircleLogic();
+
+    CircleLogic(CircleBoardGUI *gui,
+                int numPlayers=DEFAULT_NUM_PLAYERS,
                 int boardDepth=DEFAULT_BOARD_DEPTH,
                 int boardSymmetry=DEFAULT_BOARD_SYMMETRY,
                 int botPlayer=DEFAULT_BOT_PLAYER,
@@ -51,6 +56,7 @@ public:
     static const int GAME_OVER;
 
 private:
+    CircleBoardGUI *gui;
     CircleBoard board;
     int numCircles;
     int currentPlayer;

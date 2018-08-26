@@ -1,4 +1,5 @@
 #include "circlelogic.h"
+#include "circleboardgui.h"
 #include <QDebug>
 
 const int CircleLogic::NO_PLAYER = -1; // unoccupied
@@ -7,8 +8,16 @@ const int CircleLogic::PLAYER_TWO = 1;
 const int CircleLogic::PLAYER_THREE = 2;
 const int CircleLogic::GAME_OVER = -2;
 
-CircleLogic::CircleLogic(int numPlayers, int boardDepth, int boardSymmetry, int botPlayer, int botDifficulty)
+CircleLogic::CircleLogic() {}
+
+CircleLogic::CircleLogic(CircleBoardGUI *gui,
+                         int numPlayers,
+                         int boardDepth,
+                         int boardSymmetry,
+                         int botPlayer,
+                         int botDifficulty)
 {
+    this->gui = gui;
     if (numPlayers == 1) {
         qInfo("Setting up bot.");
         this->numPlayers = 2;
@@ -42,6 +51,7 @@ bool CircleLogic::selectCircle(circle_ptr circle)
         this->remainingSteps[currentPlayer]--;
 
         updateNeighbors(circle);
+        this->gui->update();
         return runNextRound();
     }
     return true;
@@ -122,12 +132,14 @@ bool CircleLogic::runNextRound()
         return false;
     }
     if (this->botOn && this->currentPlayer == this->botPlayer) {
+        this->gui->botPause(); // pause before bot goes
         return botStep();
     }
     return true;
 }
 
 bool CircleLogic::botStep() {
+    // CircleBoardGUI::delay(BOT_PAUSE);
     return this->selectCircle(this->bot.getNextStep());
 }
 

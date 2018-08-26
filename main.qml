@@ -89,7 +89,7 @@ Item {
             anchors.topMargin: marginSize
             anchors.horizontalCenter: parent.horizontalCenter
             model: ["1 (vs. bot)", "2", "3"]
-            currentIndex: 0 // default vs bot
+            currentIndex: 1 // default two players
             onCurrentIndexChanged: {
                 if (!botOptions) return;
                 if (numPlayersDropDown.currentIndex == 0) {
